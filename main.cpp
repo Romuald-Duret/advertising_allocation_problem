@@ -1,20 +1,3 @@
-/*
- Ce programme permet la résolution en méthode exacte du problème d'allocation de spot publicitaires pour plusieurs marques.
- Il utilise la méthode d'epsilon-contrainte ainsi que le solveur CPLEX.
- Il a été relaxé afin de faciliter son test ainsi que son implémentation.
- 
- Globalement le programme fonctionne tel que :
-    - Définition des données necéssaires
-    - Récupération des données JSON
-    - Remplissage du modèle CPLEX
-    - Exécution du problème mono-objectif de chaque objectif du problème initial
-    - Résolution du problème sous epsilon-contrainte jusqu'à avoir toutes les valeurs d'epsilon (condition d'arrêt : chaque epsilon à atteint la solution extrême de l'objectif lié)
-    - Expression des résultats obtenus
- 
- Auteur : Romuald DURET
- */
-
-
 #include <iostream>
 #include <cstdlib>
 #include <fstream>
@@ -26,12 +9,12 @@
 ILOSTLBEGIN
 
 
-// JSON Parser
+//  Parseur JSON
 using json = nlohmann::json;
 using namespace std;
 
 
-// Function that return 1 if j1 and j2 are competitive brands
+// Fonction qui retourne 1 si 2 marques sont compétitives
 int fp(string brand_type[], int j1, int j2){
     if(brand_type[j1].compare(brand_type[j2]) == 0){
         return 1;
@@ -67,18 +50,18 @@ int main(int argc, char **argv)
     cout << "Nombre de spots : " << nb_Com_Break << endl;
     cout << "NOmbre de marques : " << nb_Brands << endl;
     
-    int prime_break[nb_Com_Break]; // fp(i)    V
-    string brand_type[nb_Brands]; // fc(j1,J2)    X -> no type on the data
+    int prime_break[nb_Com_Break]; // fp(i)
+    string brand_type[nb_Brands]; // fc(j1,J2)
     
     
-    float break_time[nb_Com_Break]; // T_i     V
-    float brand_time[nb_Brands]; // t_j        V
-    float grp_cap[nb_Brands]; // GRP_j         V
-    float budget_cap[nb_Brands]; // BUDGET _j  V
-    float prime[nb_Brands]; // PRIME _j        V
-    float priority[nb_Brands]; // PRIORITY _j  X -> no need to take care
+    float break_time[nb_Com_Break]; // T_i
+    float brand_time[nb_Brands]; // t_j
+    float grp_cap[nb_Brands]; // GRP_j
+    float budget_cap[nb_Brands]; // BUDGET _j
+    float prime[nb_Brands]; // PRIME _j
+    float priority[nb_Brands]; // PRIORITY _j
     
-    float grp[nb_Com_Break][nb_Brands]; // grp_ij  V
+    float grp[nb_Com_Break][nb_Brands]; // grp_ij
     int cost_matrix[nb_Com_Break][nb_Brands]; // c_ij
 
     // AUTRES DONNEES
@@ -143,7 +126,7 @@ int main(int argc, char **argv)
         // PRIME_j
         prime[cpt] = brand.value()["ratio_prime"];
     }
-    
+
     
     try
     {
@@ -233,9 +216,6 @@ int main(int argc, char **argv)
             modelTV.add(Ctr1Expr <= Model_T_i[i]);
         }
        
-        
-        
-         
          // Ne pas avoir de marques compéttitives sur le même écran
          for (i = 0; i < nb_Com_Break; i++){
              for (int j1 = 0; j1 < nb_Brands; j1++){
@@ -248,7 +228,6 @@ int main(int argc, char **argv)
                  }
              }
          }
-        
         
         // Fonction objectif
         IloExpr objTV(env);
@@ -625,6 +604,8 @@ int main(int argc, char **argv)
     system("PAUSE");
     
     return 0;
+
+    
 }
 
 

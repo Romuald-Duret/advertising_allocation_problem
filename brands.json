@@ -1,7 +1,7 @@
 {
     "0": {
         "audience": "man_13-34",
-        "budget": 878613,
+        "budget": 5278613,
         "cost_grp": 3.0,
         "format": 15,
         "ratio_prime": 10,
@@ -10,7 +10,7 @@
     },
     "1": {
        "audience": "woman_13-34",
-       "budget": 81545,
+       "budget": 4281545,
        "cost_grp": 4.2,
        "format": 25,
        "ratio_prime": 10,
@@ -19,13 +19,24 @@
    },
     "2": {
         "audience": "man_34-65",
-        "budget": 29960,
+        "budget": 6349960,
         "cost_grp": 6.5,
+        "format": 25,
+        "ratio_prime": 15,
+        "ratio_premium": 27,
+        "type": "truc"
+    },
+    "3": {
+        "audience": "man+65",
+        "budget": 7412678,
+        "cost_grp": 8.5,
         "format": 25,
         "ratio_prime": 15,
         "ratio_premium": 27,
         "type": "truc"
     }
 }
+
+
 
 
