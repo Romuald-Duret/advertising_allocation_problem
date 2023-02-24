@@ -49,7 +49,7 @@ using json = nlohmann::ordered_json;
  Priorité :
  Cette fonction est primordiale et correspond à une des 2 approches de résolution
 */
-list<tuple<float,int, list<list<list<bool>>> > > epsilonSolve(Data * mydata){
+void epsilonSolve(Data * mydata){
     
     // VARIABLE : x_ikj
     IloArray<IloArray<IloNumVarArray>> Model_Var_x_ikj(mydata->env, mydata->m);
@@ -533,8 +533,7 @@ list<tuple<float,int, list<list<list<bool>>> > > epsilonSolve(Data * mydata){
                     f1 = tempF1;
                 }
                 
-                
-                
+                // Permet d'ajouter le type de solution obtenu pour cette occurrence
                 if(which_sol == 1){
                     // Normalement la solution obtenue est la meilleure pour les 2 objectifs -> on lnnajoute
                     solutions.push_back(make_tuple(f1, f2, tmp_solution1));
@@ -543,20 +542,14 @@ list<tuple<float,int, list<list<list<bool>>> > > epsilonSolve(Data * mydata){
                     solutions.push_back(make_tuple(f1, f2, tmp_solution2));
                 }
                 
-                
-                
                 // Incrémentation du nombre d'occurences
                 cpt++;
             }
-            
-            
-            
-            
-            
         }
     }
     
-    cout << "finish epsilon : " << cpt << endl;
+    cout << "Finish epsilon optimization" << endl;
+    cout << "Number of occurence : " << cpt << endl;
     
 
     /*
@@ -599,12 +592,15 @@ list<tuple<float,int, list<list<list<bool>>> > > epsilonSolve(Data * mydata){
         cpt_final++;
     }
     
-    //solution_file["Solution found"] = cpt;
+    string file_name = "fileTest.json";
+   
+    // Ecriture de la solution obtenue dans un fichier JSON
+    std::ofstream file(file_name);
     
-    
-    std::ofstream file("./fileTest.json");
+    // Permet au fichier d'etre correctement indenté
     file << std::setw(4) << solution_file << std::endl;
-    return solutions;
+    
+    cout << "Results file written on : " << file_name << endl;
 }
 
 
@@ -717,7 +713,7 @@ int main(int argc, char **argv)
     */
     
     //cout << mydata.Model_maxPREMIUM_j[1] / 100 * mydata.Model_d_j[1] << endl;
-    
+    /*
     list<tuple<float,int, list<list<list<bool>>> > > solutions = epsilonSolve(&mydata);
     
     
@@ -726,6 +722,9 @@ int main(int argc, char **argv)
         
     }
      
+     */
     
+    epsilonSolve(&mydata);
+     
     return 0;
 }
