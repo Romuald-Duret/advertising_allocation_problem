@@ -548,6 +548,11 @@ void epsilonSolve(Data * mydata){
         }
     }
     
+    for(auto cpt = solutions.begin(); cpt != solutions.end(); cpt++){
+        cout << get<0>(*cpt) << " ; " << get<1>(*cpt) << endl;
+        
+    }
+    
     cout << "Finish epsilon optimization" << endl;
     cout << "Number of occurence : " << cpt << endl;
     
@@ -692,11 +697,16 @@ void testSolution(){
  */
 int main(int argc, char **argv)
 {
-    //
+    // Données
     Data mydata;
     
+    // Parsing des données
     parsingData(&mydata,
-            "/Users/romu/Desktop/Projets/Stage2022/CPLEX_Test/CPLEX_Test/break.json", "/Users/romu/Desktop/Projets/Stage2022/CPLEX_Test/CPLEX_Test/brands.json");
+            "/Users/romu/Desktop/Projets/Stage2022/CPLEX_Test/CPLEX_Test/break.json",
+                "/Users/romu/Desktop/Projets/Stage2022/CPLEX_Test/CPLEX_Test/brands.json");
+    
+    // Epsilon solve
+    epsilonSolve(&mydata);
 
     //cout << mydata.Model_m << mydata.Model_n << mydata.Model_s_i[2] << endl;
     
@@ -724,8 +734,6 @@ int main(int argc, char **argv)
     
      tata test
      */
-    
-    epsilonSolve(&mydata);
      
     return 0;
 }
