@@ -102,8 +102,116 @@ void compareSolves(){
  Cette fonction est importante car elle permet de valider si les résultats obtenus
  sont correctes.
 */
-void testSolution(){
+void testSolution(string filename, Data * mydata){
     
+    // Récupération des données JSON des solutions
+    ifstream sol_file(filename);
+    json solutions = json::parse(sol_file);
+    
+    // Nombre de solutions trouvées
+    int nb_sol = solutions["Nombre solutions total"].get<int>();
+    
+    // Structure d'une solution
+    struct Solution {
+        float grp;
+        int revenus_TV;
+        list<list<list<bool>>> allocation;
+    };
+    
+    // Tableau de solution
+    struct Solution tab_sol[nb_sol];
+
+    // Parsing des solutions
+    int tmp = 0;
+    for (const auto& item : solutions.items()){
+        
+        if(tmp != nb_sol){
+            
+            struct Solution tmp_sol;
+            
+            tmp_sol.grp = item.value()["GRP"];
+            tmp_sol.revenus_TV = item.value()["revenus globaux"];
+            
+            list<list<list<bool>>> allocation;
+            
+            for(const auto& ecran : item.value()["Allocation"].items()){
+                
+                list<list<bool>> tmp_ecran;
+                for(const auto& spot : ecran.value().items()){
+                    
+                    list<bool> tmp_spot;
+                    for(const auto& brand : spot.value().items()){
+                        
+                        tmp_spot.push_back(brand.value());
+                    }
+                    
+                    tmp_ecran.push_back(tmp_spot);
+                }
+                
+                allocation.push_back(tmp_ecran);
+            }
+            
+            tmp_sol.allocation = allocation;
+            
+            tab_sol[tmp] = tmp_sol;
+        }
+    
+        tmp ++;
+        
+    }
+    
+    
+    // Verification contraintes
+    for(int i = 0; i < nb_sol; i++){
+        
+        //cout << i << endl;
+        
+        
+        int screen = 0;
+        //
+        for(auto break_tmp = tab_sol[i].allocation.begin(); break_tmp != tab_sol[i].allocation.end(); break_tmp++){
+            
+            
+            int spot = 0;
+            list<list<bool>> & spots = *break_tmp;
+            for(auto spot_tmp = spots.begin(); spot_tmp != spots.end(); spot_tmp++){
+                
+                
+                int cpt = 0;
+                
+                list<bool> & brands = *spot_tmp;
+                for(auto brand_tmp = brands.begin(); brand_tmp != brands.end(); brand_tmp++){
+                    
+                    //cout << *brand_tmp << endl;
+                    
+                    if(*brand_tmp){
+                        cpt+=1;
+                    }
+                }
+                
+                if(cpt > 1){
+                    cout << "Error at solution : " <<  i << " | On screen : " << screen << " | At spot : " << spot << endl;
+                    throw -1;
+                }
+                
+                spot++;
+            }
+            
+            screen++;
+        }
+       
+     
+        
+        
+        
+        
+        
+        
+    }
+    
+    
+    
+    cout << "OK -> Toutes les solutions sont validées." << endl;
 }
 
 
@@ -122,7 +230,10 @@ int main(int argc, char **argv)
                 "/Users/romu/Desktop/Projets/Stage2022/CPLEX_Test/CPLEX_Test/brands.json");
     
     // Epsilon solve
-    epsilonSolve(&mydata);
+    //epsilonSolve(&mydata);
+    
+    // Solution test
+    testSolution("result_file_epsilon.json", &mydata);
      
     return 0;
 }

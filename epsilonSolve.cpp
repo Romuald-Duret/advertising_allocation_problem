@@ -304,7 +304,14 @@ void epsilonSolve(Data * mydata){
                             monoGRP.out() << endl;
                             
                             tmpF2 += monoGRP.getValue(Model_Var_x_ikj[i][k][j]) * mydata->Model_d_j[j] * mydata->Model_p_ik[i][k];
-                            spot_sol.push_back(monoGRP.getValue(Model_Var_x_ikj[i][k][j]));
+                            
+                            if(monoGRP.getValue(Model_Var_x_ikj[i][k][j]) <= 0.5){
+                                spot_sol.push_back(0);
+                            }else{
+                                spot_sol.push_back(1);
+                            }
+                            
+                           // spot_sol.push_back(monoGRP.getValue(Model_Var_x_ikj[i][k][j]));
                         }
                         break_solution.push_back(spot_sol);
                     }
@@ -516,9 +523,14 @@ void epsilonSolve(Data * mydata){
                                 monoTV.out() << monoTV.getValue(Model_Var_x_ikj[i][k][j]) << " " ;
                                 monoTV.out() << endl;
                                 
-                                tempF1 += monoGRP.getValue(Model_Var_x_ikj[i][k][j]) * mydata->Model_grp_ij[i][j];
+                                tempF1 += monoTV.getValue(Model_Var_x_ikj[i][k][j]) * mydata->Model_grp_ij[i][j];
                                 
-                                spot_sol.push_back(monoTV.getValue(Model_Var_x_ikj[i][k][j]));
+                                if(monoTV.getValue(Model_Var_x_ikj[i][k][j]) <= 0.5){
+                                    spot_sol.push_back(0);
+                                }else{
+                                    spot_sol.push_back(1);
+                                }
+                                
                             }
                             break_solution.push_back(spot_sol);
                         }
@@ -566,8 +578,8 @@ void epsilonSolve(Data * mydata){
     int cpt_final = 0;
     for(auto cpt_sol = solutions.begin(); cpt_sol != solutions.end(); cpt_sol++){
         
-        solution_file[cpt_final]["GRP"] = get<0>(*cpt_sol);
-        solution_file[cpt_final]["revenus globaux"] = get<1>(*cpt_sol);
+        solution_file["Solution "+ to_string(cpt_final)]["GRP"] = get<0>(*cpt_sol);
+        solution_file["Solution "+ to_string(cpt_final)]["revenus globaux"] = get<1>(*cpt_sol);
         
         list<list<list<bool>>> repart = get<2>(*cpt_sol);
         
@@ -586,7 +598,9 @@ void epsilonSolve(Data * mydata){
                 int brand_cpt = 0;
                 for(auto brand_tmp = brands.begin(); brand_tmp != brands.end(); brand_tmp++){
                     
-                    solution_file[cpt_final]["Solution "+ to_string(cpt_final)]["Ecran num "+ to_string(break_cpt)]["Spot num "+ to_string(spot_cpt)]["Marque num "+ to_string(brand_cpt)] = *brand_tmp;
+                    // "Solution "+ to_string(cpt_final)
+                    
+                    solution_file["Solution "+ to_string(cpt_final)]["Allocation"]["Ecran num "+ to_string(break_cpt)]["Spot num "+ to_string(spot_cpt)]["Marque num "+ to_string(brand_cpt)] = *brand_tmp;
                     brand_cpt++;
                     
                     
@@ -601,6 +615,8 @@ void epsilonSolve(Data * mydata){
         
         cpt_final++;
     }
+    
+    solution_file["Nombre solutions total"] = cpt_final;
     
     // Nom du fichier
     string file_name = "result_file_epsilon.json";
