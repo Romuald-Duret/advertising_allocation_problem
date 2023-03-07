@@ -107,7 +107,7 @@ void parsingData(Data * mydata ,string breaks_path, string brands_path){
         mydata->s_i.push_back((int) item.value()["slots"].size() - nb_spot_to_remove);
         
         // Ajout du GRP_ij
-        list<float> tmp_grp_ij;
+        list<double> tmp_grp_ij;
         for (const auto& brand : brands.items()){
             json cpt_grp = item.value()["grp"];
             for (const auto& g : cpt_grp.items()){
@@ -210,7 +210,7 @@ void parsingData(Data * mydata ,string breaks_path, string brands_path){
         
         // Model_grp_ij
         mydata->Model_grp_ij[cpt] = IloNumArray(mydata->env, mydata->n);
-        list<float> & tmp_grp = *grp;
+        list<double> & tmp_grp = *grp;
         int marque_cpt = 0;
         for(auto marque = tmp_grp.begin(); marque!= tmp_grp.end(); marque++){
             mydata->Model_grp_ij[cpt][marque_cpt] = *marque;

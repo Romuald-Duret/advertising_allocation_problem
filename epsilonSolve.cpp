@@ -57,14 +57,14 @@ void epsilonSolve(Data * mydata){
         //cout << mydata->Model_s_i[i] << endl;
         Model_Var_x_ikj[i] = IloArray<IloNumVarArray>(mydata->env, mydata->Model_s_i[i]);
         for(int spot = 0; spot < mydata->Model_s_i[i]; spot++){
-            Model_Var_x_ikj[i][spot] = IloNumVarArray(mydata->env, mydata->n, 0, 1, ILOINT);
+            Model_Var_x_ikj[i][spot] = IloNumVarArray(mydata->env, mydata->n, 0, 1, ILOBOOL);
         }
     }
     
     // Tuple indiquant les valeurs des solutions obtenues
-    list<tuple<float,int, list<list<list<bool>>> > > solutions;
+    list<tuple<double,int, list<list<list<bool>>> > > solutions;
     
-    float f1 = 0.0;
+    double f1 = 0.0;
     int f2 = 0;
     
     int cpt = 0;
@@ -190,24 +190,6 @@ void epsilonSolve(Data * mydata){
             modelGRP.add(Ctr7Expr <= (mydata->Model_maxPREMIUM_j[j] / 100) * mydata->Model_b_j[j]);
         }
         
-        /*
-        // Tous les spots premium doivent être alloués
-        for (int i = 0; i < mydata->Model_m; i++){
-            for(int k = 0; k < mydata->Model_s_i[i]; k++){
-                
-                if(mydata->Model_premium_ik[i][k]){
-                    IloExpr Ctr9Expr(mydata->env);
-                    for(int j = 0; j < mydata->Model_n; j++){
-                        Ctr9Expr += Model_Var_x_ikj[i][k][j];
-                    }
-                    modelGRP.add(Ctr9Expr <= 1);
-                }
-                
-            }
-        }
-        */
-        
-        
         // Ajout de l'epsilon contrainte sur f2
         if(cpt != 0){
             IloExpr Ctr10Expr(mydata->env);
@@ -220,17 +202,6 @@ void epsilonSolve(Data * mydata){
                 }
             }
             modelGRP.add(Ctr10Expr >= (f2 + 1));
-            
-            
-            IloExpr Ctr11Expr(mydata->env);
-            for(int j = 0; j < mydata->Model_n; j++){
-                for (int i = 0; i < mydata->Model_m; i++){
-                    for(int k = 0; k < mydata->Model_s_i[i]; k++){
-                        Ctr11Expr += Model_Var_x_ikj[i][k][j] * mydata->Model_grp_ij[i][j];
-                    }
-                }
-            }
-            modelGRP.add(Ctr11Expr <= (f1-0.001));
         }
         
         
@@ -279,9 +250,9 @@ void epsilonSolve(Data * mydata){
                 else
                     monoGRP.out() << "Solution realisable." << endl;
 
-                monoGRP.out() << " Valeur de la F.O. : " << (float)(monoGRP.getObjValue()) << endl;
+                monoGRP.out() << " Valeur de la F.O. : " << (double)(monoGRP.getObjValue()) << endl;
                 
-                f1 = (float)(monoGRP.getObjValue());
+                f1 = (double)(monoGRP.getObjValue());
                 
                 int tmpF2 = 0;
                 
@@ -321,7 +292,7 @@ void epsilonSolve(Data * mydata){
                 }
                 
                 f2 = tmpF2;
-                cout << "F2_1 : " << f2 << endl;
+                cout  << f1 << ";" << f2 << endl;
             }
         }
         
@@ -460,7 +431,9 @@ void epsilonSolve(Data * mydata){
                     }
                 }
             }
-            modelTV.add(Ctr11Expr == f1);
+            //modelTV.add(Ctr11Expr == f1);
+            modelTV.add(Ctr11Expr <= f1+0.0001);
+            modelTV.add(Ctr11Expr >= f1-0.0001);
             
             
             // Fonction objectif -> F2 (TV)
@@ -506,7 +479,7 @@ void epsilonSolve(Data * mydata){
                     
                     f2 = (int)(monoTV.getObjValue());
                     
-                    float tempF1 = 0;
+                    double tempF1 = 0;
                     
                     for (int i = 0; i < mydata->Model_m; i++)
                     {
@@ -525,6 +498,8 @@ void epsilonSolve(Data * mydata){
                                 
                                 tempF1 += monoTV.getValue(Model_Var_x_ikj[i][k][j]) * mydata->Model_grp_ij[i][j];
                                 
+                                
+                                
                                 if(monoTV.getValue(Model_Var_x_ikj[i][k][j]) <= 0.5){
                                     spot_sol.push_back(0);
                                 }else{
@@ -541,6 +516,8 @@ void epsilonSolve(Data * mydata){
                         
                     }
                     
+                    //cout << tempF1 << ";" << f1<< endl;
+                    cout  << tempF1 << ";" << f2 << endl;
                     f1 = tempF1;
                 }
                 

@@ -113,7 +113,7 @@ void testSolution(string filename, Data * mydata){
     
     // Structure d'une solution
     struct Solution {
-        float grp;
+        double grp;
         int revenus_TV;
         list<list<list<bool>>> allocation;
     };
@@ -164,11 +164,8 @@ void testSolution(string filename, Data * mydata){
     // Verification contraintes
     for(int i = 0; i < nb_sol; i++){
         
-        //cout << i << endl;
-        
-        
+        // Un spot ne peut être alloué qu'une seule fois
         int screen = 0;
-        //
         for(auto break_tmp = tab_sol[i].allocation.begin(); break_tmp != tab_sol[i].allocation.end(); break_tmp++){
             
             
@@ -199,6 +196,9 @@ void testSolution(string filename, Data * mydata){
             
             screen++;
         }
+        
+        
+        
        
      
         
@@ -225,15 +225,16 @@ int main(int argc, char **argv)
     Data mydata;
     
     // Parsing des données
+    
     parsingData(&mydata,
             "/Users/romu/Desktop/Projets/Stage2022/CPLEX_Test/CPLEX_Test/break.json",
                 "/Users/romu/Desktop/Projets/Stage2022/CPLEX_Test/CPLEX_Test/brands.json");
     
     // Epsilon solve
-    //epsilonSolve(&mydata);
+    epsilonSolve(&mydata);
     
     // Solution test
-    testSolution("result_file_epsilon.json", &mydata);
+    //testSolution("result_file_epsilon.json", &mydata);
      
     return 0;
 }

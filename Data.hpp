@@ -32,7 +32,7 @@ class Data{
 
             // Ecrans
         list<int> T_i; // T_i = durée de l'écran i en secondes
-        list<list<float>> grp_ij; // grp_ij = Gain de GRP pour j dans l'écran i
+        list<list<double>> grp_ij; // grp_ij = Gain de GRP pour j dans l'écran i
         list<bool> prime_i;
         list<int> s_i;
         list<list<int>> p_ik;
