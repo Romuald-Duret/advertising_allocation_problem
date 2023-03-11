@@ -164,6 +164,8 @@ void testSolution(string filename, Data * mydata){
     // Verification contraintes
     for(int i = 0; i < nb_sol; i++){
         
+        
+        
         // Un spot ne peut être alloué qu'une seule fois
         int screen = 0;
         for(auto break_tmp = tab_sol[i].allocation.begin(); break_tmp != tab_sol[i].allocation.end(); break_tmp++){
@@ -187,15 +189,53 @@ void testSolution(string filename, Data * mydata){
                 }
                 
                 if(cpt > 1){
-                    cout << "Error at solution : " <<  i << " | On screen : " << screen << " | At spot : " << spot << endl;
+                    cout << "Error at solution : " <<  i << " | On screen : " << screen << " | At spot : " << spot << " | On constraint 1" << endl;
                     throw -1;
                 }
                 
                 spot++;
             }
-            
             screen++;
         }
+        
+        
+        // Une marque ne peut apparaitre qu'une fois sur un écran
+        screen = 0;
+        for(auto break_tmp = tab_sol[i].allocation.begin(); break_tmp != tab_sol[i].allocation.end(); break_tmp++){
+            
+            int value[mydata->n];
+            for(int i=0; i< mydata->n; i++){
+                value[i] = 0;
+            }
+            
+            
+            int spot = 0;
+            list<list<bool>> & spots = *break_tmp;
+            for(auto spot_tmp = spots.begin(); spot_tmp != spots.end(); spot_tmp++){
+                
+                int brand = 0;
+                list<bool> & brands = *spot_tmp;
+                for(auto brand_tmp = brands.begin(); brand_tmp != brands.end(); brand_tmp++){
+                    
+                    if(*brand_tmp){
+                        value[brand] += 1;
+                    }
+                    
+                    brand++;
+                }
+                spot++;
+            }
+            
+            
+            for(int i=0; i< mydata->n; i++){
+                if(value[i] > 1){
+                    cout << "Error at solution : " <<  i << " | On screen : " << screen << " | At spot : " << spot << " | On constraint 2" << " | Value : " << value[i] << endl;
+                    throw -1;
+                }
+            }
+            screen++;
+        }
+        
         
         
         
@@ -231,10 +271,10 @@ int main(int argc, char **argv)
                 "/Users/romu/Desktop/Projets/Stage2022/CPLEX_Test/CPLEX_Test/brands.json");
     
     // Epsilon solve
-    epsilonSolve(&mydata);
+    //epsilonSolve(&mydata);
     
     // Solution test
-    //testSolution("result_file_epsilon.json", &mydata);
+    testSolution("result_file_epsilon.json", &mydata);
      
     return 0;
 }
