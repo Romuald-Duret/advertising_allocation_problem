@@ -160,16 +160,20 @@ void testSolution(string filename, Data * mydata){
         
     }
     
+    /*
+    Verification contraintes
+    */
     
-    // Verification contraintes
+    
     for(int i = 0; i < nb_sol; i++){
         
+        /*
+        Un spot ne peut être alloué qu'une seule fois
+        */
         
-        
-        // Un spot ne peut être alloué qu'une seule fois
+        // Parcours de la solution
         int screen = 0;
         for(auto break_tmp = tab_sol[i].allocation.begin(); break_tmp != tab_sol[i].allocation.end(); break_tmp++){
-            
             
             int spot = 0;
             list<list<bool>> & spots = *break_tmp;
@@ -177,17 +181,16 @@ void testSolution(string filename, Data * mydata){
                 
                 
                 int cpt = 0;
-                
                 list<bool> & brands = *spot_tmp;
                 for(auto brand_tmp = brands.begin(); brand_tmp != brands.end(); brand_tmp++){
                     
-                    //cout << *brand_tmp << endl;
-                    
+                    // Si le spot est alloué -> +1 au compteur
                     if(*brand_tmp){
                         cpt+=1;
                     }
                 }
                 
+                // Test vérifiant que chaque spot est alloué qu'une seule fois
                 if(cpt > 1){
                     cout << "Error at solution : " <<  i << " | On screen : " << screen << " | At spot : " << spot << " | On constraint 1" << endl;
                     throw -1;
@@ -199,13 +202,18 @@ void testSolution(string filename, Data * mydata){
         }
         
         
-        // Une marque ne peut apparaitre qu'une fois sur un écran
+        /*
+        Une marque ne peut apparaitre qu'une fois sur un écran
+        */
+        
+        // Parcours de la solution
         screen = 0;
         for(auto break_tmp = tab_sol[i].allocation.begin(); break_tmp != tab_sol[i].allocation.end(); break_tmp++){
             
-            int value[mydata->n];
+            
+            int unique_brand[mydata->n];
             for(int i=0; i< mydata->n; i++){
-                value[i] = 0;
+                unique_brand[i] = 0;
             }
             
             
@@ -217,8 +225,9 @@ void testSolution(string filename, Data * mydata){
                 list<bool> & brands = *spot_tmp;
                 for(auto brand_tmp = brands.begin(); brand_tmp != brands.end(); brand_tmp++){
                     
+                    // Si la marque est allouée -> +1 au compteur de la marque pour l'écran
                     if(*brand_tmp){
-                        value[brand] += 1;
+                        unique_brand[brand] += 1;
                     }
                     
                     brand++;
@@ -226,10 +235,10 @@ void testSolution(string filename, Data * mydata){
                 spot++;
             }
             
-            
+            // Test vérifiant que la marque n'apparait qu'une fois maximum sur chaque écran
             for(int i=0; i< mydata->n; i++){
-                if(value[i] > 1){
-                    cout << "Error at solution : " <<  i << " | On screen : " << screen << " | At spot : " << spot << " | On constraint 2" << " | Value : " << value[i] << endl;
+                if(unique_brand[i] > 1){
+                    cout << "Error at solution : " <<  i << " | On screen : " << screen << " | On constraint 2" << " | Value : " << unique_brand[i] << endl;
                     throw -1;
                 }
             }
@@ -239,8 +248,52 @@ void testSolution(string filename, Data * mydata){
         
         
         
-       
-     
+        /*
+        Ne pas dépasser le budget de chaque marque
+        */
+        
+        // Creation tableau contenant le budget de chaque marque dans chaque solution
+        int brand_budget[mydata->n];
+        for(int i=0; i< mydata->n; i++){
+            brand_budget[i] = 0;
+        }
+        
+        // Parcours de la solution
+        screen = 0;
+        for(auto break_tmp = tab_sol[i].allocation.begin(); break_tmp != tab_sol[i].allocation.end(); break_tmp++){
+            
+            
+            int spot = 0;
+            list<list<bool>> & spots = *break_tmp;
+            for(auto spot_tmp = spots.begin(); spot_tmp != spots.end(); spot_tmp++){
+                
+                int brand = 0;
+                list<bool> & brands = *spot_tmp;
+                for(auto brand_tmp = brands.begin(); brand_tmp != brands.end(); brand_tmp++){
+                    
+                    // Si la marque est allouée sur ce spot alors on ajoute le budget de l'allocation
+                    if(*brand_tmp){
+                        brand_budget[brand] += mydata->Model_p_ik[screen][spot] * mydata->Model_d_j[brand];
+                    }
+                    
+                    brand++;
+                }
+                spot++;
+            }
+            
+            screen++;
+        }
+        
+        // Test verifiant ou non que le budget obtenu est valide
+        for(int i=0; i< mydata->n; i++){
+            if(brand_budget[i] > mydata->Model_b_j[i]){
+                cout << "Error for brand : " <<  i << " | On constraint 3" << " | Value : " << brand_budget[i] << " | Objective : " << mydata->Model_b_j[i] << endl;
+                throw -1;
+            }
+        }
+        
+        
+        
         
         
         
