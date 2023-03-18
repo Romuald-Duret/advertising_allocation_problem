@@ -225,6 +225,7 @@ void epsilonSolve(Data * mydata){
         monoGRP.setParam(IloCplex::Threads, 1);
         monoGRP.setParam(IloCplex::SimDisplay, 1);
         monoGRP.setParam(IloCplex::TiLim, 3600);
+        monoGRP.setParam(IloCplex::MIPDisplay, 0);
          
         monoGRP.exportModel("/Users/romu/Desktop/Projets/Stage2022/modelTV.lp");
         
@@ -250,29 +251,28 @@ void epsilonSolve(Data * mydata){
                 else
                     monoGRP.out() << "Solution realisable." << endl;
 
-                monoGRP.out() << " Valeur de la F.O. : " << (double)(monoGRP.getObjValue()) << endl;
+                //monoGRP.out() << " Valeur de la F.O. : " << (double)(monoGRP.getObjValue()) << endl;
                 
                 f1 = (double)(monoGRP.getObjValue());
                 
                 int tmpF2 = 0;
-                
-                
         
                 for (int i = 0; i < mydata->Model_m; i++)
                 {
                     
                     list<list<bool>> break_solution;
-                    monoGRP.out() << " Ecran publicitaire " << i << " : " << endl;
-                    
+                    //monoGRP.out() << " Ecran publicitaire " << i << " : " << endl;
                     for(int k = 0; k < mydata->Model_s_i[i]; k++){
                         
                         list<bool> spot_sol;
-                        monoGRP.out() << " \t Spot numéro : " << k << endl;
+                        //monoGRP.out() << " \t Spot numéro : " << k << endl;
                         for (int j = 0; j < mydata->n; j++)
                         {
+                            /*
                             monoGRP.out() << cpt << " \t \t Brand num " << j << " : ";
                             monoGRP.out() << monoGRP.getValue(Model_Var_x_ikj[i][k][j]) << " " ;
                             monoGRP.out() << endl;
+                            */
                             
                             tmpF2 += monoGRP.getValue(Model_Var_x_ikj[i][k][j]) * mydata->Model_d_j[j] * mydata->Model_p_ik[i][k];
                             
@@ -281,8 +281,6 @@ void epsilonSolve(Data * mydata){
                             }else{
                                 spot_sol.push_back(1);
                             }
-                            
-                           // spot_sol.push_back(monoGRP.getValue(Model_Var_x_ikj[i][k][j]));
                         }
                         break_solution.push_back(spot_sol);
                     }
@@ -431,7 +429,6 @@ void epsilonSolve(Data * mydata){
                     }
                 }
             }
-            //modelTV.add(Ctr11Expr == f1);
             modelTV.add(Ctr11Expr <= f1+0.0001);
             modelTV.add(Ctr11Expr >= f1-0.0001);
             
@@ -454,6 +451,7 @@ void epsilonSolve(Data * mydata){
             monoTV.setParam(IloCplex::Threads, 1);
             monoTV.setParam(IloCplex::SimDisplay, 1);
             monoTV.setParam(IloCplex::TiLim, 3600);
+            monoTV.setParam(IloCplex::MIPDisplay, 0);
             
             if (!monoTV.solve()) {
                 mydata->env.error() << "Echec ... Non Lineaire?" << endl;
@@ -475,7 +473,7 @@ void epsilonSolve(Data * mydata){
                     else
                         monoTV.out() << "Solution realisable." << endl;
                     
-                    monoTV.out() << " Valeur de la F.O. : " << (int)(monoTV.getObjValue()) << endl;
+                    //monoTV.out() << " Valeur de la F.O. : " << (int)(monoTV.getObjValue()) << endl;
                     
                     f2 = (int)(monoTV.getObjValue());
                     
@@ -485,16 +483,18 @@ void epsilonSolve(Data * mydata){
                     {
                         list<list<bool>> break_solution;
                         
-                        monoTV.out() << " Ecran publicitaire " << i << " : " << endl;
+                        //monoTV.out() << " Ecran publicitaire " << i << " : " << endl;
                         for(int k = 0; k < mydata->Model_s_i[i]; k++){
                             
                             list<bool> spot_sol;
-                            monoTV.out() << " \t Spot numéro : " << k << endl;
+                            //monoTV.out() << " \t Spot numéro : " << k << endl;
                             for (int j = 0; j < mydata->n; j++)
                             {
+                                /*
                                 monoTV.out() << cpt << " \t \t Brand num " << j << " : ";
                                 monoTV.out() << monoTV.getValue(Model_Var_x_ikj[i][k][j]) << " " ;
                                 monoTV.out() << endl;
+                                 */
                                 
                                 tempF1 += monoTV.getValue(Model_Var_x_ikj[i][k][j]) * mydata->Model_grp_ij[i][j];
                                 

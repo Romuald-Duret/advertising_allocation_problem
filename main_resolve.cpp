@@ -163,9 +163,8 @@ void testSolution(string filename, Data * mydata){
     /*
     Verification contraintes
     */
-    
-    
     for(int i = 0; i < nb_sol; i++){
+        
         
         /*
         Un spot ne peut être alloué qu'une seule fois
@@ -296,8 +295,242 @@ void testSolution(string filename, Data * mydata){
         
         
         
+        /*
+        Ne pas dépasser la durée de l'écran publicitaire
+        */
+        
+        // Parcours de solution
+        screen = 0;
+        for(auto break_tmp = tab_sol[i].allocation.begin(); break_tmp != tab_sol[i].allocation.end(); break_tmp++){
+            
+            // Compteur du temps alloué pour cet écran
+            int cpt_time = 0;
+            
+            int spot = 0;
+            list<list<bool>> & spots = *break_tmp;
+            for(auto spot_tmp = spots.begin(); spot_tmp != spots.end(); spot_tmp++){
+                
+                int brand = 0;
+                list<bool> & brands = *spot_tmp;
+                for(auto brand_tmp = brands.begin(); brand_tmp != brands.end(); brand_tmp++){
+                    
+                    // Si la marque est allouée sur cet écran alors on ajoute la durée de pub dans le compteur
+                    if(*brand_tmp){
+                        cpt_time += mydata->Model_d_j[brand];
+                    }
+                    
+                    brand++;
+                }
+                
+                spot++;
+            }
+            
+            // Test vérifiant que le temps alloué est inférieur à la limite de l'écran
+            if(cpt_time > mydata->Model_T_i[screen]){
+                cout << "Error for brand : " <<  i << " | On constraint 4" << " | Value : " << cpt_time << " | Objective : " <<  mydata->Model_T_i[screen] << endl;
+                throw -1;
+            }
+            
+            screen++;
+        }
         
         
+        /*
+        Pas de marques compétititives au sein d'un même écran
+        */
+        // Parcours de solution
+        screen = 0;
+        for(auto break_tmp = tab_sol[i].allocation.begin(); break_tmp != tab_sol[i].allocation.end(); break_tmp++){
+            
+            // Liste permettant de sauvegarder la présence d'une marque dans un écran (0,1)
+            int brand_pres[mydata->n];
+            for(int i=0; i< mydata->n; i++){
+                brand_pres[i] = 0;
+            }
+            
+            int spot = 0;
+            list<list<bool>> & spots = *break_tmp;
+            for(auto spot_tmp = spots.begin(); spot_tmp != spots.end(); spot_tmp++){
+                
+                int brand = 0;
+                list<bool> & brands = *spot_tmp;
+                for(auto brand_tmp = brands.begin(); brand_tmp != brands.end(); brand_tmp++){
+                    
+                    // Si la marque est allouée
+                    if(*brand_tmp){
+                        brand_pres[brand] = 1;
+                    }
+                    
+                    brand++;
+                }
+                
+                spot++;
+            }
+            
+            // On parcours le tableau de présence de solution
+            for(int i=0; i< mydata->n; i++){
+                
+                // Si une marque est allouée
+                if(brand_pres[i] == 1){
+                    
+                    // On parcours une 2eme fois
+                    for(int i2 = 0; i2 < mydata->n; i2++){
+                        
+                        // Afin de regarder si une autre marque allouée est compétitive avec la première
+                        if(i!=i2 && brand_pres[i2] && mydata->Model_compare_brands[i][i2]){
+                            
+                            cout << "Error for brand : " <<  i << " and brand : "<< i2 << " | At screen " << screen << " | On constraint 5"  << endl;
+                            throw -1;
+                        }
+                        
+                    }
+                }
+            }
+            
+            
+            screen++;
+        }
+        
+        
+        
+        /*
+        Atteindre un niveau de GRP minimal pour chaque marque
+        */
+        
+        
+        // Liste permettant de sauvegarder le grp de chaque marque
+        float brand_grp[mydata->n];
+        for(int i=0; i< mydata->n; i++){
+            brand_grp[i] = 0.;
+        }
+        
+        // Parcours de solution
+        screen = 0;
+        for(auto break_tmp = tab_sol[i].allocation.begin(); break_tmp != tab_sol[i].allocation.end(); break_tmp++){
+            
+            
+            int spot = 0;
+            list<list<bool>> & spots = *break_tmp;
+            for(auto spot_tmp = spots.begin(); spot_tmp != spots.end(); spot_tmp++){
+                
+                int brand = 0;
+                list<bool> & brands = *spot_tmp;
+                for(auto brand_tmp = brands.begin(); brand_tmp != brands.end(); brand_tmp++){
+                    
+                    // Si la marque est allouée sur cet écran alors on ajoute le grp obtenu
+                    if(*brand_tmp){
+                        brand_grp[brand] += mydata->Model_grp_ij[screen][brand];
+                    }
+                    
+                    brand++;
+                }
+                
+                spot++;
+            }
+            
+            screen++;
+        }
+        
+        // On parcours le tableau grp de chaque marque
+        for(int i=0; i< mydata->n; i++){
+            if(brand_grp[i] < mydata->Model_minGRP_j[i]){
+                cout << "Error for brand : " <<  i << " | On constraint 6" << " | GRP_min required : " << mydata->Model_minGRP_j[i] << " | Acutal value : " << brand_grp[i] << endl;
+                throw -1;
+            }
+        }
+        
+        
+        /*
+        Ne pas dépasser le pourcentage d'allocation maximal pour premimum
+        */
+        
+        int brand_premium[mydata->n];
+        for(int i=0; i< mydata->n; i++){
+            brand_premium[i] = 0;
+        }
+        
+        
+        // Parcours de solution
+        screen = 0;
+        for(auto break_tmp = tab_sol[i].allocation.begin(); break_tmp != tab_sol[i].allocation.end(); break_tmp++){
+            
+            
+            int spot = 0;
+            list<list<bool>> & spots = *break_tmp;
+            for(auto spot_tmp = spots.begin(); spot_tmp != spots.end(); spot_tmp++){
+                
+                int brand = 0;
+                list<bool> & brands = *spot_tmp;
+                for(auto brand_tmp = brands.begin(); brand_tmp != brands.end(); brand_tmp++){
+                    
+                    // Si la marque est allouée sur cet écran alors on ajoute le grp obtenu
+                    if(*brand_tmp && mydata->Model_premium_ik[screen][spot]){
+                        brand_premium[brand] += mydata->Model_p_ik[screen][spot] * mydata->Model_d_j[brand];
+                    }
+                    
+                    brand++;
+                }
+                
+                spot++;
+            }
+            
+            screen++;
+        }
+        
+        for(int i=0; i< mydata->n; i++){
+            if(brand_premium[i] > ((mydata->Model_maxPREMIUM_j[i] / 100) * mydata->Model_b_j[i])){
+                cout << "Error for brand : " <<  i << " | On constraint 7" << " | PREMIUM_max required : " << mydata->Model_maxPREMIUM_j[i] << " represant :  " << (mydata->Model_maxPREMIUM_j[i] / 100) * mydata->Model_b_j[i] << " | Acutal value : " << brand_premium[i] << endl;
+                throw -1;
+            }
+        }
+        
+        
+        
+        
+        
+        /*
+        Ne pas dépasser le pourcentage d'allocation maximal pour prime
+        */
+        
+        int brand_prime[mydata->n];
+        for(int i=0; i< mydata->n; i++){
+            brand_prime[i] = 0;
+        }
+        
+        
+        // Parcours de solution
+        screen = 0;
+        for(auto break_tmp = tab_sol[i].allocation.begin(); break_tmp != tab_sol[i].allocation.end(); break_tmp++){
+            
+            
+            int spot = 0;
+            list<list<bool>> & spots = *break_tmp;
+            for(auto spot_tmp = spots.begin(); spot_tmp != spots.end(); spot_tmp++){
+                
+                int brand = 0;
+                list<bool> & brands = *spot_tmp;
+                for(auto brand_tmp = brands.begin(); brand_tmp != brands.end(); brand_tmp++){
+                    
+                    // Si la marque est allouée sur cet écran alors on ajoute le grp obtenu
+                    if(*brand_tmp && mydata->Model_prime_i[screen]){
+                        brand_prime[brand] += mydata->Model_p_ik[screen][spot] * mydata->Model_d_j[brand];
+                    }
+                    
+                    brand++;
+                }
+                
+                spot++;
+            }
+            
+            screen++;
+        }
+        
+        for(int i=0; i< mydata->n; i++){
+            if(brand_prime[i] > ((mydata->Model_maxPRIME_j[i] / 100) * mydata->Model_b_j[i])){
+                cout << "Error for brand : " <<  i << " | On constraint 8" << " | PREMIUM_max required : " << mydata->Model_maxPRIME_j[i] << " represant :  " << (mydata->Model_maxPRIME_j[i] / 100) * mydata->Model_b_j[i] << " | Acutal value : " << brand_prime[i] << endl;
+                throw -1;
+            }
+        }
         
         
     }
