@@ -1,3 +1,6 @@
+/*!
+ * @mainpage README.md
+
 # Méthodes exactes pour un problème d’ordonnancement de spots publicitaires télévisuels
 
 ## Sujet

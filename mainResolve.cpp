@@ -5,6 +5,23 @@
 //  Created by Romuald Duret on 18/01/2023.
 //
 
+/*!
+ * @file mainResolve.cpp
+ *
+ * @section intro Introduction
+ *
+ * Ce fichier est le fichier principal. Il comporte la fonction main(). Cette méthode est pour l'instant à remplir en fonction des besoins. L'idéal serait d'y créer un menu afin de faciliter et automatiser l'exécution.
+ *
+ * @section libraries Libraries
+ *
+ * This file depends on 3 CPLEX libraries specified on the git.
+ *
+ * @section author Author
+ *
+ * Written by Romuald DURET.
+ *
+ */
+
 #include <iostream>
 #include <cstdlib>
 #include <fstream>
@@ -23,7 +40,7 @@
 ILOSTLBEGIN
 
 /*
- Racourcis
+ Raccourcis
 */
 using namespace std;
 
@@ -79,7 +96,7 @@ void compareSolves(){
 }
 
 /*
-
+ Fonction main du programme. Elle est pour l'instant à remplir avec les différentes fonctions disponibles.
 */
 int main(int argc, char **argv)
 {
@@ -87,7 +104,6 @@ int main(int argc, char **argv)
     Data mydata;
     
     // Parsing des données
-    
     parsingData(&mydata,
             "/Users/romu/Desktop/Projets/Stage2022/CPLEX_Test/CPLEX_Test/break.json",
                 "/Users/romu/Desktop/Projets/Stage2022/CPLEX_Test/CPLEX_Test/brands.json");
@@ -97,6 +113,6 @@ int main(int argc, char **argv)
     
     // Solution test
     testSolution("result_file_epsilon.json", &mydata);
-     
+    
     return 0;
 }

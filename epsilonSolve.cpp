@@ -5,6 +5,44 @@
 //  Created by Romuald Duret on 25/02/2023.
 //
 
+/*!
+ * @file epsilonSolve.cpp
+ *
+ * @section intro Introduction
+ *
+ * Ce fichier compote la fonction epsilonSolve(Data) et permet de réaliser une optimisation du problème initial à partir de 2 fichiers avec l'approche epsilon-contrainte.
+ *
+ * Entrée :
+ * La fonction utilise le modèle qui est défini et rempli par la fonction
+ * parsingData().
+ 
+ * Sortie :
+ * Il y a 2 types de sorties : la sortie console et la sortie fichier. La sortie console
+ * correspond au retour console et indiquera certaines informations sur l’exécution de la
+ * fonction telle que le temps d’exécution par exemple. La sortie fichier correspond à un fichier
+ * JSON indiquant toutes les solutions obtenues, les valeurs des objectifs pour chaque solution
+ * ainsi que l’ordonnancement pour chacune d’entre elle.
+ *
+ * Préconditions :
+ * Le modèle doit être rempli avec la fonction parsingData().
+ *
+ * Postconditions :
+ * Les solutions doivent respecter toutes les contraintes spécifiées par le
+ * modèle.
+ *
+ * Priorité :
+ * Cette fonction est primordiale et correspond à une des 2 approches de résolution
+ *
+ * @section libraries Libraries
+ *
+ * This file depends on 3 CPLEX libraries specified on the git.
+ *
+ * @section author Author
+ *
+ * Written by Romuald DURET.
+ *
+ */
+
 #include "epsilonSolve.hpp"
 #include <stdio.h>
 #include <iostream>
@@ -64,15 +102,17 @@ void epsilonSolve(Data * mydata){
     // Tuple indiquant les valeurs des solutions obtenues
     list<tuple<double,int, list<list<list<bool>>> > > solutions;
     
+    // Valeur actuelle des objectif pour chaque occurence
     double f1 = 0.0;
     int f2 = 0;
     
+    // Compteur de solutions
     int cpt = 0;
     
-
     // Booleen indiquant qu'une solution existe
     bool solutionFound = 1;
     
+    // Booleen indiquant quelle solution est à ajouter
     int which_sol = 0;
     
     // Boucle de d'optimisation
@@ -232,7 +272,6 @@ void epsilonSolve(Data * mydata){
         if (!monoGRP.solve()) {
             mydata->env.error() << "Echec ... Non Lineaire?" << endl;
             solutionFound = 0;
-            //throw(-1);
         }
         
         monoGRP.out() << "Solution status: " << monoGRP.getStatus() << endl;
@@ -250,30 +289,22 @@ void epsilonSolve(Data * mydata){
                     monoGRP.out() << "Solution Optimale." << endl;
                 else
                     monoGRP.out() << "Solution realisable." << endl;
-
-                //monoGRP.out() << " Valeur de la F.O. : " << (double)(monoGRP.getObjValue()) << endl;
                 
+                // Valeur des objectifs obtenus
                 f1 = (double)(monoGRP.getObjValue());
                 
                 int tmpF2 = 0;
-        
+                
+                // Ajout de la solution dans une liste
                 for (int i = 0; i < mydata->Model_m; i++)
                 {
                     
                     list<list<bool>> break_solution;
-                    //monoGRP.out() << " Ecran publicitaire " << i << " : " << endl;
                     for(int k = 0; k < mydata->Model_s_i[i]; k++){
                         
                         list<bool> spot_sol;
-                        //monoGRP.out() << " \t Spot numéro : " << k << endl;
                         for (int j = 0; j < mydata->n; j++)
                         {
-                            /*
-                            monoGRP.out() << cpt << " \t \t Brand num " << j << " : ";
-                            monoGRP.out() << monoGRP.getValue(Model_Var_x_ikj[i][k][j]) << " " ;
-                            monoGRP.out() << endl;
-                            */
-                            
                             tmpF2 += monoGRP.getValue(Model_Var_x_ikj[i][k][j]) * mydata->Model_d_j[j] * mydata->Model_p_ik[i][k];
                             
                             if(monoGRP.getValue(Model_Var_x_ikj[i][k][j]) <= 0.5){
@@ -285,8 +316,9 @@ void epsilonSolve(Data * mydata){
                         break_solution.push_back(spot_sol);
                     }
                     tmp_solution1.push_back(break_solution);
+                    
+                    // On adapte la valeur de la solution à ajouter
                     which_sol = 1;
-                    monoGRP.out() << endl;
                 }
                 
                 f2 = tmpF2;
@@ -453,15 +485,14 @@ void epsilonSolve(Data * mydata){
             monoTV.setParam(IloCplex::TiLim, 3600);
             monoTV.setParam(IloCplex::MIPDisplay, 0);
             
+            // Resolution
             if (!monoTV.solve()) {
                 mydata->env.error() << "Echec ... Non Lineaire?" << endl;
-
             }
             
             monoTV.out() << "Solution status: " << monoTV.getStatus() << endl;
             if (monoTV.getStatus() == IloAlgorithm::Unbounded){
                 monoTV.out() << "F.O. non bornée." << endl;
-             
             }else
             {
                 if (monoTV.getStatus() == IloAlgorithm::Infeasible){
@@ -473,33 +504,23 @@ void epsilonSolve(Data * mydata){
                     else
                         monoTV.out() << "Solution realisable." << endl;
                     
-                    //monoTV.out() << " Valeur de la F.O. : " << (int)(monoTV.getObjValue()) << endl;
-                    
+                    // Valeur des objectifs obtenus
                     f2 = (int)(monoTV.getObjValue());
                     
                     double tempF1 = 0;
                     
+                    // Ajout de la solution dans une liste
                     for (int i = 0; i < mydata->Model_m; i++)
                     {
                         list<list<bool>> break_solution;
                         
-                        //monoTV.out() << " Ecran publicitaire " << i << " : " << endl;
                         for(int k = 0; k < mydata->Model_s_i[i]; k++){
                             
                             list<bool> spot_sol;
-                            //monoTV.out() << " \t Spot numéro : " << k << endl;
                             for (int j = 0; j < mydata->n; j++)
                             {
-                                /*
-                                monoTV.out() << cpt << " \t \t Brand num " << j << " : ";
-                                monoTV.out() << monoTV.getValue(Model_Var_x_ikj[i][k][j]) << " " ;
-                                monoTV.out() << endl;
-                                 */
-                                
                                 tempF1 += monoTV.getValue(Model_Var_x_ikj[i][k][j]) * mydata->Model_grp_ij[i][j];
-                                
-                                
-                                
+          
                                 if(monoTV.getValue(Model_Var_x_ikj[i][k][j]) <= 0.5){
                                     spot_sol.push_back(0);
                                 }else{
@@ -510,23 +531,19 @@ void epsilonSolve(Data * mydata){
                             break_solution.push_back(spot_sol);
                         }
                         tmp_solution2.push_back(break_solution);
+                        
+                        // On adapte la valeur de la solution à ajouter
                         which_sol = 2;
-                        monoTV.out() << endl;
-                        
-                        
                     }
-                    
-                    //cout << tempF1 << ";" << f1<< endl;
-                    cout  << tempF1 << ";" << f2 << endl;
                     f1 = tempF1;
                 }
                 
                 // Permet d'ajouter le type de solution obtenu pour cette occurrence
                 if(which_sol == 1){
-                    // Normalement la solution obtenue est la meilleure pour les 2 objectifs -> on lnnajoute
+                    // Solution optimale obtenue dès le début
                     solutions.push_back(make_tuple(f1, f2, tmp_solution1));
                 }else{
-                    // Normalement la solution obtenue est la meilleure pour les 2 objectifs -> on lnnajoute
+                    // Solution obtenue de base optimisée
                     solutions.push_back(make_tuple(f1, f2, tmp_solution2));
                 }
                 
@@ -552,9 +569,12 @@ void epsilonSolve(Data * mydata){
     ###########################*/
     json solution_file;
     
+    
+    // Parcours de chaque solution pour l'ajouter dans le fichier de solution final
     int cpt_final = 0;
     for(auto cpt_sol = solutions.begin(); cpt_sol != solutions.end(); cpt_sol++){
         
+        // Ecriture dans le fichier de la valeur des objectifs obtenus
         solution_file["Solution "+ to_string(cpt_final)]["GRP"] = get<0>(*cpt_sol);
         solution_file["Solution "+ to_string(cpt_final)]["revenus globaux"] = get<1>(*cpt_sol);
         
@@ -565,24 +585,19 @@ void epsilonSolve(Data * mydata){
             
             list<list<bool>> & spots = *break_tmp;
             
-            //out << "ECRAN NUM : " << break_cpt << endl;
             int spot_cpt = 0;
             for(auto spot_tmp = spots.begin(); spot_tmp != spots.end(); spot_tmp++){
                 
                 list<bool> & brands = *spot_tmp;
                 
-                //cout << "Spot num : " << spot_cpt << endl;
                 int brand_cpt = 0;
                 for(auto brand_tmp = brands.begin(); brand_tmp != brands.end(); brand_tmp++){
                     
-                    // "Solution "+ to_string(cpt_final)
-                    
+                    // Ecriture dans le fichier de l'information de la presence ou non de chaque marque, pour chaque spot de chaque ecran
                     solution_file["Solution "+ to_string(cpt_final)]["Allocation"]["Ecran num "+ to_string(break_cpt)]["Spot num "+ to_string(spot_cpt)]["Marque num "+ to_string(brand_cpt)] = *brand_tmp;
+                    
                     brand_cpt++;
-                    
-                    
                 }
-                
                 
                 spot_cpt++;
             }
@@ -593,6 +608,7 @@ void epsilonSolve(Data * mydata){
         cpt_final++;
     }
     
+    // Ajout du nombre de solutions obtenues dans l'instance d'optimisation
     solution_file["Nombre solutions total"] = cpt_final;
     
     // Nom du fichier

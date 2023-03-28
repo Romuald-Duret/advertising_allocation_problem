@@ -5,6 +5,48 @@
 //  Created by Romuald Duret on 28/03/2023.
 //
 
+/*!
+ * @file testSolution.cpp
+ *
+ * @section intro Introduction
+ *
+ * Ce fichier compote la fonction testSolution(string, Data) et permet de tester les solutions obtenues et stockées dans un fichier à partir d'une approche epsilon-contrainte ou somme pondérée.
+ *
+ * Entrée :
+ * Un fichier au format JSON correspondant aux solutions obtenues pour une instance
+ * de résolution du problème peu importe l’approche utilisée.
+ * La fonction utilise le modèle qui est défini et rempli par la fonction
+ * parsingData().
+ 
+ * Sortie :
+ * Une sortie console indiquant par un chiffre si toutes les solutions sont bonnes ou
+ * non (respectivement 0 ou 1). Si 1, alors la fonction indique l’indice de la solution qui ne
+ * passe pas les tests ainsi qu’un numéro indiquant quelle contrainte la solution n’arrive-t-elle
+ * pas à satisfaire.
+ 
+ * Préconditions :
+ * Aucune.
+ 
+ * Postconditions :
+ * Si le programme retourne 0 c’est que toutes les solutions sont correctes,
+ * s’il retourne 1 alorse la solution indiquée par l’indice ne respecte pas la contrainte indiquée
+ * dans le code d’erreur affiché.
+ 
+ * Priorité :
+ * Cette fonction est importante car elle permet de valider si les résultats obtenus
+ * sont correctes.
+ *
+ * @section libraries Libraries
+ *
+ * This file depends on 3 CPLEX libraries specified on the git.
+ *
+ * @section author Author
+ *
+ * Written by Romuald DURET.
+ *
+ */
+
+
 #include "testSolution.hpp"
 
 
@@ -12,6 +54,7 @@
  Entrée :
  Un fichier au format JSON correspondant aux solutions obtenues pour une instance
  de résolution du problème peu importe l’approche utilisée.
+ La fonction utilise le modèle qui est défini et rempli par la fonction parsingData().
  
  Sortie :
  Une sortie console indiquant par un chiffre si toutes les solutions sont bonnes ou
@@ -58,11 +101,13 @@ void testSolution(string filename, Data * mydata){
             
             struct Solution tmp_sol;
             
+            // Récupération des valeurs des objtecifs de la solution temporaire
             tmp_sol.grp = item.value()["GRP"];
             tmp_sol.revenus_TV = item.value()["revenus globaux"];
             
             list<list<list<bool>>> allocation;
             
+            // Parcours de la solution actuelle
             for(const auto& ecran : item.value()["Allocation"].items()){
                 
                 list<list<bool>> tmp_ecran;
@@ -316,7 +361,6 @@ void testSolution(string filename, Data * mydata){
                 }
             }
             
-            
             screen++;
         }
         
@@ -325,7 +369,6 @@ void testSolution(string filename, Data * mydata){
         /*
         Atteindre un niveau de GRP minimal pour chaque marque
         */
-        
         
         // Liste permettant de sauvegarder le grp de chaque marque
         float brand_grp[mydata->n];
@@ -368,7 +411,6 @@ void testSolution(string filename, Data * mydata){
             }
         }
         
-        
         /*
         Ne pas dépasser le pourcentage d'allocation maximal pour premimum
         */
@@ -377,7 +419,6 @@ void testSolution(string filename, Data * mydata){
         for(int i=0; i< mydata->n; i++){
             brand_premium[i] = 0;
         }
-        
         
         // Parcours de solution
         screen = 0;
@@ -412,9 +453,6 @@ void testSolution(string filename, Data * mydata){
                 throw -1;
             }
         }
-        
-        
-        
         
         
         /*
@@ -465,6 +503,6 @@ void testSolution(string filename, Data * mydata){
     }
     
     
-    
+    // Si le code arrive ici c'est que toutes les solutions sont valides et respectent le modèle.
     cout << "OK -> Toutes les solutions sont validées." << endl;
 }

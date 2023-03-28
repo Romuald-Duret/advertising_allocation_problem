@@ -5,6 +5,41 @@
 //  Created by Romuald Duret on 25/01/2023.
 //
 
+/*!
+ * @file dataParsing.cpp
+ *
+ * @section intro Introduction
+ *
+ * Ce fichier permet comporte la fonction necessaire pour le parsing des données (parsingData(Data , string, string))
+ *
+ * Entrée :
+ * 2 fichiers au format JSON correspondant respectivement aux demandes des marques
+ * et aux offres proposées par les propriétaires télévisuels via leur chemin d’accès précisé.
+ * La structure de données utilisée pour l'optimisation.
+ 
+ * Sortie :
+ * Aucune. La fonction modifie directement les structures de données utiles pour la
+ * définition du modèle de résolution.
+ 
+ * Préconditions :
+ * Il faut que les 2 fichiers existent et se situent sur le chemin d’accès précisé.
+ 
+ * Postconditions :
+ * Aucune.
+ 
+ * Priorité :
+ * Cette fonction est primordiale et sera utilisée pour les 2 approches à implémenter.
+ *
+ * @section libraries Libraries
+ *
+ * This file depends on 3 CPLEX libraries specified on the git.
+ *
+ * @section author Author
+ *
+ * Written by Romuald DURET.
+ *
+ */
+
 #include "dataParsing.hpp"
 #include <iostream>
 #include <cstdlib>
@@ -16,6 +51,7 @@
 #include <iterator>
 #include <ilcplex/ilocplex.h>
 #include "Data.hpp"
+
 ILOSTLBEGIN
 
 
@@ -30,6 +66,7 @@ using json = nlohmann::ordered_json;
  Entrée :
  2 fichiers au format JSON correspondant respectivement aux demandes des marques
  et aux offres proposées par les propriétaires télévisuels via leur chemin d’accès précisé.
+ La structure de données utilisée pour l'optimisation.
  
  Sortie :
  Aucune. La fonction modifie directement les structures de données utiles pour la
