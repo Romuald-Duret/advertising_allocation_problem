@@ -165,6 +165,8 @@ void testSolution(string filename, Data * mydata){
                 
                 // Test vérifiant que chaque spot est alloué qu'une seule fois
                 if(cpt > 1){
+                    
+                    // Message d'erreur
                     cout << "Error at solution : " <<  i << " | On screen : " << screen << " | At spot : " << spot << " | On constraint 1" << endl;
                     throw -1;
                 }
@@ -211,6 +213,8 @@ void testSolution(string filename, Data * mydata){
             // Test vérifiant que la marque n'apparait qu'une fois maximum sur chaque écran
             for(int i=0; i< mydata->n; i++){
                 if(unique_brand[i] > 1){
+                    
+                    // Message d'erreur
                     cout << "Error at solution : " <<  i << " | On screen : " << screen << " | On constraint 2" << " | Value : " << unique_brand[i] << endl;
                     throw -1;
                 }
@@ -260,6 +264,8 @@ void testSolution(string filename, Data * mydata){
         // Test verifiant ou non que le budget obtenu est valide
         for(int i=0; i< mydata->n; i++){
             if(brand_budget[i] > mydata->Model_b_j[i]){
+                
+                // Message d'erreur
                 cout << "Error for brand : " <<  i << " | On constraint 3" << " | Value : " << brand_budget[i] << " | Objective : " << mydata->Model_b_j[i] << endl;
                 throw -1;
             }
@@ -301,6 +307,8 @@ void testSolution(string filename, Data * mydata){
             
             // Test vérifiant que le temps alloué est inférieur à la limite de l'écran
             if(cpt_time > mydata->Model_T_i[screen]){
+                
+                // Message d'erreur
                 cout << "Error for brand : " <<  i << " | On constraint 4" << " | Value : " << cpt_time << " | Objective : " <<  mydata->Model_T_i[screen] << endl;
                 throw -1;
             }
@@ -341,7 +349,7 @@ void testSolution(string filename, Data * mydata){
                 spot++;
             }
             
-            // On parcours le tableau de présence de solution
+            // Vérification
             for(int i=0; i< mydata->n; i++){
                 
                 // Si une marque est allouée
@@ -353,6 +361,7 @@ void testSolution(string filename, Data * mydata){
                         // Afin de regarder si une autre marque allouée est compétitive avec la première
                         if(i!=i2 && brand_pres[i2] && mydata->Model_compare_brands[i][i2]){
                             
+                            // Message d'erreur
                             cout << "Error for brand : " <<  i << " and brand : "<< i2 << " | At screen " << screen << " | On constraint 5"  << endl;
                             throw -1;
                         }
@@ -403,9 +412,11 @@ void testSolution(string filename, Data * mydata){
             screen++;
         }
         
-        // On parcours le tableau grp de chaque marque
+        // Vérification
         for(int i=0; i< mydata->n; i++){
             if(brand_grp[i] < mydata->Model_minGRP_j[i]){
+                
+                // Message d'erreur
                 cout << "Error for brand : " <<  i << " | On constraint 6" << " | GRP_min required : " << mydata->Model_minGRP_j[i] << " | Acutal value : " << brand_grp[i] << endl;
                 throw -1;
             }
@@ -447,8 +458,11 @@ void testSolution(string filename, Data * mydata){
             screen++;
         }
         
+        // Vérification
         for(int i=0; i< mydata->n; i++){
             if(brand_premium[i] > ((mydata->Model_maxPREMIUM_j[i] / 100) * mydata->Model_b_j[i])){
+                
+                // Message d'erreur
                 cout << "Error for brand : " <<  i << " | On constraint 7" << " | PREMIUM_max required : " << mydata->Model_maxPREMIUM_j[i] << " represant :  " << (mydata->Model_maxPREMIUM_j[i] / 100) * mydata->Model_b_j[i] << " | Acutal value : " << brand_premium[i] << endl;
                 throw -1;
             }
@@ -492,8 +506,11 @@ void testSolution(string filename, Data * mydata){
             screen++;
         }
         
+        // Vérification
         for(int i=0; i< mydata->n; i++){
             if(brand_prime[i] > ((mydata->Model_maxPRIME_j[i] / 100) * mydata->Model_b_j[i])){
+                
+                // Message d'erreur
                 cout << "Error for brand : " <<  i << " | On constraint 8" << " | PREMIUM_max required : " << mydata->Model_maxPRIME_j[i] << " represant :  " << (mydata->Model_maxPRIME_j[i] / 100) * mydata->Model_b_j[i] << " | Acutal value : " << brand_prime[i] << endl;
                 throw -1;
             }
