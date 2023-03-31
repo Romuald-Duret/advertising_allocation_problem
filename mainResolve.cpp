@@ -36,6 +36,7 @@
 #include "dataParsing.hpp"
 #include "epsilonSolve.hpp"
 #include "testSolution.hpp"
+#include "sumponSolve.hpp"
 
 ILOSTLBEGIN
 
@@ -43,32 +44,6 @@ ILOSTLBEGIN
  Raccourcis
 */
 using namespace std;
-
-/*
- Entrée :
- Aucune. La fonction utilise le modèle qui est défini et rempli par la fonction
- parsingData().
- 
- Sortie :
- Il y a 2 types de sorties : la sortie console et la sortie fichier. La sortie console
- correspond au retour console et indiquera certaines informations sur l’exécution de la
- fonction telle que le temps d’exécution par exemple. La sortie fichier correspond à un fichier
- JSON indiquant toutes les solutions obtenues, les valeurs des objectifs pour chaque solution
- ainsi que l’ordonnancement pour chacune d’entre elle.
- 
- Préconditions :
- Le modèle doit être rempli avec la fonction parsingData().
- 
- Postconditions :
- Les solutions doivent respecter toutes les contraintes spécifiées par le
- modèle.
- 
- Priorité :
- Cette fonction est importante et correspond à une des 2 approches de résolution.
-*/
-void sumponSolve(){
-    
-}
 
 
 /*
@@ -109,10 +84,13 @@ int main(int argc, char **argv)
                 "/Users/romu/Desktop/Projets/Stage2022/CPLEX_Test/CPLEX_Test/brands.json");
     
     // Epsilon solve
-    epsilonSolve(&mydata);
+    //epsilonSolve(&mydata);
+    
+    // WeightSum solve
+    sumponSolve(&mydata);
     
     // Solution test
-    testSolution("result_file_epsilon.json", &mydata);
+    //testSolution("result_file_epsilon.json", &mydata);
     
     return 0;
 }

@@ -267,7 +267,7 @@ void epsilonSolve(Data * mydata){
         monoGRP.setParam(IloCplex::TiLim, 3600);
         monoGRP.setParam(IloCplex::MIPDisplay, 0);
          
-        monoGRP.exportModel("/Users/romu/Desktop/Projets/Stage2022/modelTV.lp");
+        //monoGRP.exportModel("/Users/romu/Desktop/Projets/Stage2022/modelTV.lp");
         
         if (!monoGRP.solve()) {
             mydata->env.error() << "Echec ... Non Lineaire?" << endl;
