@@ -1,0 +1,56 @@
+{
+    "0": {
+        "audience": "man_13-34",
+        "budget": 690483,
+        "cost_grp": 0.33111463494953697,
+        "format": 15,
+        "ratio_prime": 30,
+        "ratio_premium": 11,
+        "type": "cosmetic"
+    },
+    "1": {
+        "audience": "woman_13-34",
+        "budget": 2123703,
+        "cost_grp": 0.6774370259516224,
+        "format": 15,
+        "ratio_prime": 10,
+        "ratio_premium": 16,
+        "type": "cosmetic"
+    },
+    "2": {
+        "audience": "man_34-65",
+        "budget": 737509,
+        "cost_grp": 2.2072904693610935,
+        "format": 25,
+        "ratio_prime": 15,
+        "ratio_premium": 15,
+        "type": "service"
+    },
+    "3": {
+        "audience": "woman_34-65",
+        "budget": 195100,
+        "cost_grp": 2.18548406016884,
+        "format": 15,
+        "ratio_prime": 10,
+        "ratio_premium": 30,
+        "type": "food"
+    },
+    "4": {
+        "audience": "man+65",
+        "budget": 255200,
+        "cost_grp": 1.240540744172016,
+        "format": 10,
+        "ratio_prime": 25,
+        "ratio_premium": 21,
+        "type": "food"
+    },
+    "5": {
+        "audience": "woman+65",
+        "budget": 1000004,
+        "cost_grp": 0.377321430938269,
+        "format": 10,
+        "ratio_prime": 25,
+        "ratio_premium": 28,
+        "type": "cars"
+    }
+}
