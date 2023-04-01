@@ -80,17 +80,18 @@ int main(int argc, char **argv)
     
     // Parsing des données
     parsingData(&mydata,
-            "/Users/romu/Desktop/Projets/Stage2022/CPLEX_Test/CPLEX_Test/break.json",
-                "/Users/romu/Desktop/Projets/Stage2022/CPLEX_Test/CPLEX_Test/brands.json");
+            "/Users/romu/Desktop/Projets/Stage2022/CPLEX_Test/CPLEX_Test/test_files/break.json",
+                "/Users/romu/Desktop/Projets/Stage2022/CPLEX_Test/CPLEX_Test/test_files/brands.json");
     
     // Epsilon solve
-    //epsilonSolve(&mydata);
+    epsilonSolve(&mydata);
     
     // WeightSum solve
     sumponSolve(&mydata);
     
     // Solution test
-    //testSolution("result_file_epsilon.json", &mydata);
+    testSolution("result_file_epsilon.json", &mydata);
+    //testSolution("result_file_weightsum.json", &mydata);
     
     return 0;
 }

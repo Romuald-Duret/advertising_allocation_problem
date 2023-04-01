@@ -58,13 +58,10 @@ void sumponSolve(Data * mydata){
     // Liste des solutions
     list<Solution> solutions;
     
-    
     /*
      pile de Solution
      */
     stack<tuple<Solution, Solution>> pile_solutions;
-    
-    
     
     /*
      Variable de resolution CPLEX
@@ -209,31 +206,24 @@ void sumponSolve(Data * mydata){
     monoTV.setParam(IloCplex::SimDisplay, 1);
     monoTV.setParam(IloCplex::TiLim, 3600);
     monoTV.setParam(IloCplex::MIPDisplay, 0);
-     
-    //monoTV.exportModel("/Users/romu/Desktop/Projets/Stage2022/modelTV.lp");
     
     if (!monoTV.solve()) {
         mydata->env.error() << "Echec ... Non Lineaire?" << endl;
-        //solutionFound = 0;
     }
     
     monoTV.out() << "Solution status: " << monoTV.getStatus() << endl;
     if (monoTV.getStatus() == IloAlgorithm::Unbounded){
         monoTV.out() << "F.O. non born�e." << endl;
-        //solutionFound = 0;
     }else
     {
         if (monoTV.getStatus() == IloAlgorithm::Infeasible){
             monoTV.out() << "Non-realisable." << endl;
-            //solutionFound = 0;
         }else
         {
             if (monoTV.getStatus() != IloAlgorithm::Optimal)
                 monoTV.out() << "Solution Optimale." << endl;
             else
                 monoTV.out() << "Solution realisable." << endl;
-            
-            
             
             list<list<list<bool>>> solutionTV;
             
@@ -271,10 +261,6 @@ void sumponSolve(Data * mydata){
         }
     }
     
-    //cout << sol2.grp << ";" << sol2.revenus_TV << endl;
-    
-    
-    
     /*
      Résoudre mono-objectif GRP -> sol1
      */
@@ -283,7 +269,6 @@ void sumponSolve(Data * mydata){
     IloModel modelGRP(mydata->env);
     
     Solution sol1;
-    
 
     // Un spot ne peut être alloué qu'une seule fois
     for(int i = 0; i < mydata->Model_m; i++){
@@ -716,7 +701,7 @@ void sumponSolve(Data * mydata){
             
             
             
-            // Ajouter dans pile (sol2, sol0) && (sol0, sol1)
+            // Ajouter dans pile (sol2, sol0) && (sol0, sol1) si la solution est différente
             if((get<0>(tuple_sol).revenus_TV != sol0.revenus_TV && get<0>(tuple_sol).grp != sol0.grp) && (get<1>(tuple_sol).revenus_TV != sol0.revenus_TV && get<1>(tuple_sol).grp != sol0.grp)){
                 
                 cout  << sol0.grp << ";" << sol0.revenus_TV << endl;
@@ -735,8 +720,6 @@ void sumponSolve(Data * mydata){
         
     }
         
-    // Ajout dans fichier toutes les solutions
-    cout << cpt << endl;
     
     
     // Affichage des valeurs des objectifs pour chaque solution
@@ -744,6 +727,68 @@ void sumponSolve(Data * mydata){
         cout << (*cpt).grp << " ; " << (*cpt).revenus_TV << endl;
         
     }
+    
+    
+    // Fin epsilon
+    cout << "Finish weight sum optimization" << endl;
+    cout << "Number of occurence : " << cpt << endl;
+    
+
+    /*##########################
+     JSON Result file
+    ###########################*/
+    json solution_file;
+    
+    
+    // Parcours de chaque solution pour l'ajouter dans le fichier de solution final
+    int cpt_final = 0;
+    for(auto cpt_sol = solutions.begin(); cpt_sol != solutions.end(); cpt_sol++){
+        
+        // Ecriture dans le fichier de la valeur des objectifs obtenus
+        solution_file["Solution "+ to_string(cpt_final)]["GRP"] = (*cpt_sol).grp;
+        solution_file["Solution "+ to_string(cpt_final)]["revenus globaux"] = (*cpt_sol).revenus_TV;
+        
+        list<list<list<bool>>> repart = (*cpt_sol).allocation;
+        
+        int break_cpt = 0;
+        for(auto break_tmp = repart.begin(); break_tmp != repart.end(); break_tmp++){
+            
+            list<list<bool>> & spots = *break_tmp;
+            
+            int spot_cpt = 0;
+            for(auto spot_tmp = spots.begin(); spot_tmp != spots.end(); spot_tmp++){
+                
+                list<bool> & brands = *spot_tmp;
+                
+                int brand_cpt = 0;
+                for(auto brand_tmp = brands.begin(); brand_tmp != brands.end(); brand_tmp++){
+                    
+                    // Ecriture dans le fichier de l'information de la presence ou non de chaque marque, pour chaque spot de chaque ecran
+                    solution_file["Solution "+ to_string(cpt_final)]["Allocation"]["Ecran num "+ to_string(break_cpt)]["Spot num "+ to_string(spot_cpt)]["Marque num "+ to_string(brand_cpt)] = *brand_tmp;
+                    
+                    brand_cpt++;
+                }
+                
+                spot_cpt++;
+            }
+            
+            break_cpt++;
+        }
+        
+        cpt_final++;
+    }
+    
+    // Ajout du nombre de solutions obtenues dans l'instance d'optimisation
+    solution_file["Nombre solutions total"] = cpt_final;
+    
+    // Nom du fichier
+    string file_name = "result_file_weightsum.json";
+   
+    // Ecriture de la solution obtenue dans un fichier JSON
+    std::ofstream file(file_name);
+    
+    // Permet au fichier d'etre correctement indenté
+    file << std::setw(4) << solution_file << std::endl;
+    
+    cout << "Results file written on : " << file_name << endl;
 }
-
-

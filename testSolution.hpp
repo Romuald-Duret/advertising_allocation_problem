@@ -5,12 +5,6 @@
 //  Created by Romuald Duret on 28/03/2023.
 //
 
-
-
-
-#ifndef testSolution_hpp
-#define testSolution_hp
-
 #include <stdio.h>
 #include <iostream>
 #include <cstdlib>
@@ -22,6 +16,9 @@
 #include <iterator>
 #include <ilcplex/ilocplex.h>
 #include "Data.hpp"
+
+#ifndef testSolution_hpp
+#define testSolution_hpp
 
 ILOSTLBEGIN
 

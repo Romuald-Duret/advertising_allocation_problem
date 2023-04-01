@@ -537,19 +537,19 @@ void epsilonSolve(Data * mydata){
                     }
                     f1 = tempF1;
                 }
-                
-                // Permet d'ajouter le type de solution obtenu pour cette occurrence
-                if(which_sol == 1){
-                    // Solution optimale obtenue dès le début
-                    solutions.push_back(make_tuple(f1, f2, tmp_solution1));
-                }else{
-                    // Solution obtenue de base optimisée
-                    solutions.push_back(make_tuple(f1, f2, tmp_solution2));
-                }
-                
-                // Incrémentation du nombre d'occurences
-                cpt++;
             }
+            
+            // Permet d'ajouter le type de solution obtenu pour cette occurrence
+            if(which_sol == 1){
+                // Solution optimale obtenue dès le début
+                solutions.push_back(make_tuple(f1, f2, tmp_solution1));
+            }else{
+                // Solution obtenue de base optimisée
+                solutions.push_back(make_tuple(f1, f2, tmp_solution2));
+            }
+            
+            // Incrémentation du nombre d'occurences
+            cpt++;
         }
     }
     
