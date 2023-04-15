@@ -705,8 +705,6 @@ void sumponSolve(Data * mydata){
         if(solutionFound && (get<0>(tuple_sol).revenus_TV != sol0.revenus_TV && get<0>(tuple_sol).grp < sol0.grp) && (get<1>(tuple_sol).revenus_TV < sol0.revenus_TV && get<1>(tuple_sol).grp != sol0.grp)){
             
             
-            
-        
             cout  << "Solution found for " << cpt << " : " << sol0.grp << ";" << sol0.revenus_TV << endl;
             pile_solutions.push(make_tuple(get<0>(tuple_sol),sol0));
             pile_solutions.push(make_tuple(sol0,get<1>(tuple_sol)));
