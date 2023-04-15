@@ -465,16 +465,21 @@ void sumponSolve(Data * mydata){
     pile_solutions.push(make_tuple(sol2,sol1));
     
     
+    //  271.797;5751700
+    
+    
     /*
      A faire tant que la pile n'est pas vide
      */
     while(!pile_solutions.empty()){
         
+        cout << "#### NEW ITERATION " << cpt <<" ####" << endl;
+        
         // Prendre premier tuple (sol1,sol2) de la pile (top() et pop())
         tuple<Solution, Solution> tuple_sol = pile_solutions.top();
         pile_solutions.pop();
-        cout << get<0>(tuple_sol).grp << ";" << get<0>(tuple_sol).revenus_TV << endl;
-        cout << get<1>(tuple_sol).grp << ";" << get<1>(tuple_sol).revenus_TV << endl;
+        cout << "sol2 : "<< get<0>(tuple_sol).grp << ";" << get<0>(tuple_sol).revenus_TV << endl;
+        cout << "sol1 : "<<  get<1>(tuple_sol).grp << ";" << get<1>(tuple_sol).revenus_TV << endl;
         
         // Calculer coef (yb-ya/xa-xb)
         float coef = (get<1>(tuple_sol).revenus_TV - get<0>(tuple_sol).revenus_TV)/(get<0>(tuple_sol).grp - get<1>(tuple_sol).grp);
@@ -696,26 +701,24 @@ void sumponSolve(Data * mydata){
             }
             
             
-            // Si solution  trouvée sol0
-        if(solutionFound){
+        // Si solution  trouvée sol0 et que la solution est différente
+        if(solutionFound && (get<0>(tuple_sol).revenus_TV != sol0.revenus_TV && get<0>(tuple_sol).grp < sol0.grp) && (get<1>(tuple_sol).revenus_TV < sol0.revenus_TV && get<1>(tuple_sol).grp != sol0.grp)){
             
             
             
-            // Ajouter dans pile (sol2, sol0) && (sol0, sol1) si la solution est différente
-            if((get<0>(tuple_sol).revenus_TV != sol0.revenus_TV && get<0>(tuple_sol).grp != sol0.grp) && (get<1>(tuple_sol).revenus_TV != sol0.revenus_TV && get<1>(tuple_sol).grp != sol0.grp)){
-                
-                cout  << sol0.grp << ";" << sol0.revenus_TV << endl;
-                pile_solutions.push(make_tuple(get<0>(tuple_sol),sol0));
-                pile_solutions.push(make_tuple(sol0,get<1>(tuple_sol)));
-                
-                
-                // Ajouter dans liste de solution sol0
-                solutions.push_back(sol0);
-                
-                // Incrémentation du compteur de solutions
-                cpt++;
+        
+            cout  << "Solution found for " << cpt << " : " << sol0.grp << ";" << sol0.revenus_TV << endl;
+            pile_solutions.push(make_tuple(get<0>(tuple_sol),sol0));
+            pile_solutions.push(make_tuple(sol0,get<1>(tuple_sol)));
+            
+            
+            // Ajouter dans liste de solution sol0
+            solutions.push_back(sol0);
+            
+            // Incrémentation du compteur de solutions
+            cpt++;
 
-            }
+            
         }
         
     }

@@ -91,7 +91,7 @@ int main(int argc, char **argv)
     
     // Solution test
     testSolution("result_file_epsilon.json", &mydata);
-    //testSolution("result_file_weightsum.json", &mydata);
+    testSolution("result_file_weightsum.json", &mydata);
     
     return 0;
 }
